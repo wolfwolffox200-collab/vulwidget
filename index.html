@@ -1,50 +1,73 @@
-<iframe
-  srcdoc="
-    <html>
-      <head>
-        <style>
-          body {
-            margin: 0;
-            background: #0a0a0a;
-            font-family: 'Orbitron', sans-serif;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100vw;
-            height: 100vh;
-            color: #00ff00;
-            text-shadow: 0 0 0.8vw #00ff00;
-          }
-          .box {
-            padding: 1.2vw 2.4vw;
-            border: 0.3vw solid #00ff00;
-            border-radius: 1vw;
-            background: rgba(0, 0, 0, 0.6);
-            box-shadow: 0 0 2vw #00ff00;
-            font-size: 3vw;
-            letter-spacing: 0.2vw;
-          }
-        </style>
-      </head>
-      <body>
-        <div class='box'>
-          Followers:
-          <span id='count'>Loading...</span>
-        </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>VulSilverFox Followers</title>
+  <style>
+    body {
+      margin: 0;
+      background: #000;
+      font-family: 'Orbitron', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100vw;
+      height: 100vh;
+      color: #00ff00;
+    }
 
-        <script>
-          async function loadCount() {
-            const res = await fetch('https://decapi.me/twitch/followcount/vulsilverfox');
-            const text = await res.text();
-            document.getElementById('count').textContent = text;
-          }
-          loadCount();
-          setInterval(loadCount, 30000);
-        </script>
-      </body>
-    </html>
-  "
-  width="100%"
-  height="100%"
-  style="border:none;"
-></iframe>
+    .widget {
+      display: flex;
+      align-items: center;
+      gap: 2vw;
+      padding: 1.5vw 3vw;
+      border: 0.3vw solid #00ff00;
+      border-radius: 1vw;
+      background: rgba(0, 0, 0, 0.6);
+      box-shadow: 0 0 2vw #00ff00;
+      animation: pulse 2s infinite;
+    }
+
+    .icon {
+      width: 6vw;
+      height: 6vw;
+      max-width: 80px;
+      max-height: 80px;
+      filter: drop-shadow(0 0 1vw #00ff00);
+    }
+
+    .count {
+      font-size: 3vw;
+      max-font-size: 32px; /* not standard, just ignored if unsupported */
+      text-shadow: 0 0 1vw #00ff00;
+      white-space: nowrap;
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 1vw #00ff00; }
+      50% { box-shadow: 0 0 2.2vw #00ff00; }
+      100% { box-shadow: 0 0 1vw #00ff00; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="widget">
+    <img class="icon" src="wolf.png" alt="wolf icon">
+    <div class="count">Followers: <span id="num">...</span></div>
+  </div>
+
+  <script>
+    async function loadCount() {
+      const res = await fetch("https://decapi.me/twitch/followcount/vulsilverfox");
+      const text = await res.text();
+      document.getElementById("num").textContent = text;
+    }
+
+    loadCount();
+    setInterval(loadCount, 30000);
+  </script>
+
+</body>
+</html>
+
