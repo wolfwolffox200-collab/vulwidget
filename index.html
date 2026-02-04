@@ -23,20 +23,44 @@
       gap: 20px;
     }
 
-    button {
-      padding: 10px 20px;
-      font-size: 18px;
+    /* Slider styling */
+    input[type="range"] {
+      width: 300px;
+      height: 10px;
+      background: #111;
+      border: 2px solid var(--glow);
+      border-radius: 10px;
+      box-shadow: 0 0 15px var(--glow);
+      cursor: pointer;
+      appearance: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      background: var(--glow);
+      border-radius: 50%;
+      box-shadow: 0 0 15px var(--glow);
+      cursor: pointer;
+    }
+
+    /* Tiny rainbow toggle button */
+    #rainbowToggle {
+      width: 40px;
+      height: 40px;
+      font-size: 20px;
       background: #111;
       color: var(--glow);
       border: 2px solid var(--glow);
-      border-radius: 8px;
+      border-radius: 50%;
       cursor: pointer;
       text-shadow: 0 0 10px var(--glow);
       box-shadow: 0 0 15px var(--glow);
       transition: 0.2s;
     }
 
-    button:hover {
+    #rainbowToggle:hover {
       box-shadow: 0 0 25px var(--glow);
     }
 
@@ -147,7 +171,11 @@
 
 <body>
 
-  <button id="colorBtn">Change Color</button>
+  <!-- COLOR SLIDER -->
+  <input type="range" id="colorSlider" min="0" max="6" value="3">
+
+  <!-- TINY RAINBOW TOGGLE BUTTON -->
+  <button id="rainbowToggle">R</button>
 
   <div class="widget" id="widget">
     <div class="scanlayer"></div>
@@ -193,30 +221,27 @@
     updateClock();
     setInterval(updateClock, 1000);
 
-    /* --- COLOR BUTTON LOGIC --- */
-    const colors = [
-      "red",
-      "orange",
-      "yellow",
-      "green",
-      "blue",
-      "indigo",
-      "violet"
-    ];
-
-    let index = 0;
+    /* --- COLOR SLIDER LOGIC --- */
+    const colors = ["red", "orange", "yellow", "green", "blue", "indigo", "violet"];
     const root = document.documentElement;
     const widget = document.getElementById("widget");
 
-    document.getElementById("colorBtn").addEventListener("click", () => {
+    document.getElementById("colorSlider").addEventListener("input", (e) => {
       widget.classList.remove("rainbow-mode");
+      const index = parseInt(e.target.value);
+      root.style.setProperty("--glow", colors[index]);
+    });
 
-      if (index < colors.length) {
-        root.style.setProperty("--glow", colors[index]);
-        index++;
-      } else {
+    /* --- RAINBOW TOGGLE BUTTON --- */
+    let rainbowOn = false;
+
+    document.getElementById("rainbowToggle").addEventListener("click", () => {
+      rainbowOn = !rainbowOn;
+
+      if (rainbowOn) {
         widget.classList.add("rainbow-mode");
-        index = 0;
+      } else {
+        widget.classList.remove("rainbow-mode");
       }
     });
   </script>
