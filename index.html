@@ -128,13 +128,13 @@
       100% { transform: translate3d(40px, -20px, 0); }
     }
 
-    /* CONTROLS PANEL */
+ /* CONTROL PANEL */
     .controls-panel {
       position: fixed;
       top: 50%;
       right: 0;
       transform: translateY(-50%) translateX(100%);
-      width: 260px;
+      width: min(260px, 90vw);
       background: rgba(0,0,0,0.85);
       border-left: 2px solid var(--glow);
       box-shadow: 0 0 20px var(--glow);
@@ -144,6 +144,20 @@
       gap: 10px;
       z-index: 30;
       color: #fff;
+
+      /* ⭐ scrollable panel */
+      max-height: 90vh;
+      overflow-y: auto;
+      scrollbar-width: thin;
+    }
+
+    .controls-panel::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .controls-panel::-webkit-scrollbar-thumb {
+      background: var(--glow);
+      border-radius: 10px;
     }
 
     body.settings-open .controls-panel {
@@ -207,7 +221,7 @@
       opacity: 0.8;
     }
 
-    /* HIDE UI MODE (smooth fade) */
+    /* HIDE UI MODE */
     body.hide-ui .controls-panel,
     body.hide-ui .timebox {
       opacity: 0;
@@ -231,8 +245,16 @@
       box-shadow: 0 0 15px var(--glow);
       cursor: pointer;
       background: rgba(0,0,0,0.7);
-      z-index: 40;
       text-shadow: 0 0 10px var(--glow);
+
+      /* ⭐ always visible */
+      z-index: 9999;
+    }
+
+    @media (max-height: 400px) {
+      .gear {
+        bottom: 10px;
+      }
     }
 
     .gear:hover {
@@ -322,7 +344,6 @@
       50% { border-color: hsl(calc(var(--hue) + 60), 100%, 50%); }
       100% { border-color: hsl(var(--hue), 100%, 50%); }
     }
-
     /* GLITCH */
     .widget::after {
       content: "";
@@ -530,20 +551,21 @@
     <div class="guide">
       <ul>
         <li><b>Gear</b>: open/close this panel</li>
-        <li><b>H</b>: hide/show UI (panel + time)</li>
-        <li><b>G</b>: toggle glass mode</li>
-        <li><b>C</b>: toggle circuit mode</li>
-        <li><b>R</b>: full-page rainbow cycle</li>
+        <li><b>H</b>: hide/show UI</li>
+        <li><b>G</b>: glass mode</li>
+        <li><b>C</b>: circuit mode</li>
+        <li><b>R</b>: rainbow page</li>
         <li><b>D</b>: hologram distortion</li>
         <li><b>P</b>: particle background</li>
-        <li><b>F</b>: grid floor background</li>
+        <li><b>F</b>: grid floor</li>
         <li><b>A</b>: aurora background</li>
         <li><b>N</b>: neon cursor</li>
         <li><b>1/2/3</b>: hue presets</li>
-        <li><b>8</b>: cold theme, <b>9</b>: warm theme</li>
+        <li><b>8</b>: cold theme</li>
+        <li><b>9</b>: warm theme</li>
         <li><b>0</b>: reset theme</li>
-        <li><b>X</b>: shockwave on widget</li>
-        <li><b>Z</b>: screen flash</li>
+        <li><b>X</b>: shockwave FX</li>
+        <li><b>Z</b>: flash FX</li>
         <li><b>Click wolf</b>: widget rainbow mode</li>
       </ul>
     </div>
@@ -605,8 +627,7 @@
 
     const colorSlider = document.getElementById("colorSlider");
     const bgSlider = document.getElementById("bgSlider");
-
-    /* COLOR SLIDER */
+        /* COLOR SLIDER */
     colorSlider.addEventListener("input", (e) => {
       widget.classList.remove("rainbow-mode");
       const hue = e.target.value;
@@ -653,56 +674,49 @@
       }
     });
 
-    /* GLASS MODE (G) */
+    /* MODE TOGGLES */
     function toggleGlass() {
       widget.classList.toggle("glass");
       chkGlass.checked = widget.classList.contains("glass");
       saveState();
     }
 
-    /* CIRCUIT MODE (C) */
     function toggleCircuit() {
       widget.classList.toggle("circuit");
       chkCircuit.checked = widget.classList.contains("circuit");
       saveState();
     }
 
-    /* RAINBOW PAGE (R) */
     function toggleRainbowPage() {
       document.body.classList.toggle("rainbow-page");
       chkRainbowPage.checked = document.body.classList.contains("rainbow-page");
       saveState();
     }
 
-    /* HOLOGRAM (D) */
     function toggleHolo() {
       document.body.classList.toggle("holo-on");
       chkHolo.checked = document.body.classList.contains("holo-on");
       saveState();
     }
 
-    /* PARTICLES (P) */
     function toggleParticles() {
       bgParticles.classList.toggle("active");
       chkParticles.checked = bgParticles.classList.contains("active");
       saveState();
     }
 
-    /* GRID (F) */
     function toggleGrid() {
       bgGrid.classList.toggle("active");
       chkGrid.checked = bgGrid.classList.contains("active");
       saveState();
     }
 
-    /* AURORA (A) */
     function toggleAurora() {
       bgAurora.classList.toggle("active");
       chkAurora.checked = bgAurora.classList.contains("active");
       saveState();
     }
 
-    /* NEON CURSOR (N) */
     function toggleNeonCursor() {
       document.body.classList.toggle("neon-cursor-on");
       chkNeonCursor.checked = document.body.classList.contains("neon-cursor-on");
