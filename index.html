@@ -37,7 +37,8 @@
         text-shadow 0.3s linear,
         filter 0.3s linear,
         background 0.3s linear,
-        opacity 0.3s ease;
+        opacity 0.3s ease,
+        transform 0.2s ease-out;
     }
 
     /* GLOBAL SCANLINES */
@@ -66,6 +67,46 @@
       opacity: 0.15;
       filter: blur(80px);
       z-index: 0;
+    }
+
+    /* CONTROLS WRAPPER */
+    .controls {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: center;
+      z-index: 5;
+    }
+
+    /* HIDE UI MODE (smooth fade) */
+    .hide-ui .controls {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* GEAR BUTTON */
+    .gear {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 2px solid var(--glow);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      color: var(--glow);
+      box-shadow: 0 0 15px var(--glow);
+      cursor: pointer;
+      background: rgba(0,0,0,0.6);
+      z-index: 20;
+      text-shadow: 0 0 10px var(--glow);
+    }
+
+    .gear:hover {
+      transform: scale(1.1) rotate(10deg);
     }
 
     /* SLIDERS */
@@ -230,13 +271,6 @@
       z-index: 5;
     }
 
-    /* HIDE UI MODE */
-    .hide-ui input,
-    .hide-ui .timebox {
-      opacity: 0;
-      pointer-events: none;
-    }
-
   </style>
 </head>
 
@@ -250,11 +284,16 @@
 
   <div class="timebox" id="timebox">Loading time...</div>
 
-  <input type="range" id="colorSlider" min="0" max="360" value="120">
-  <input type="range" id="bgSlider" min="0" max="100" value="0">
+  <!-- CONTROL PANEL -->
+  <div class="controls" id="controls">
+    <input type="range" id="colorSlider" min="0" max="360" value="120">
+    <input type="range" id="bgSlider" min="0" max="100" value="0">
+  </div>
+
+  <!-- GEAR BUTTON -->
+  <div class="gear" id="gear">⚙</div>
 
   <script>
-
     async function loadCount() {
       const res = await fetch("https://decapi.me/twitch/followcount/vulsilverfox");
       const text = await res.text();
@@ -289,6 +328,7 @@
 
     const root = document.documentElement;
     const widget = document.getElementById("widget");
+    const gear = document.getElementById("gear");
 
     /* COLOR SLIDER */
     document.getElementById("colorSlider").addEventListener("input", (e) => {
@@ -330,6 +370,11 @@
       }
     });
 
+    /* GEAR TOGGLE FOR CONTROLS */
+    gear.addEventListener("click", () => {
+      document.body.classList.toggle("hide-ui");
+    });
+
     /* GLASS MODE (G) */
     document.addEventListener("keydown", (e) => {
       if (e.key.toLowerCase() === "g") {
@@ -343,7 +388,6 @@
       if (e.key === "2") root.style.setProperty("--hue", 120);
       if (e.key === "3") root.style.setProperty("--hue", 300);
     });
-
   </script>
 
 </body>
