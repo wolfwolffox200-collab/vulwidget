@@ -8,6 +8,7 @@
     :root {
       --hue: 120; /* default hue */
       --glow: hsl(var(--hue), 100%, 50%);
+      --bgAlpha: 0.6; /* default widget background transparency */
     }
 
     body {
@@ -39,16 +40,7 @@
     input[type="range"] {
       width: 300px;
       height: 10px;
-      background: linear-gradient(
-        to right,
-        hsl(0,100%,50%),
-        hsl(60,100%,50%),
-        hsl(120,100%,50%),
-        hsl(180,100%,50%),
-        hsl(240,100%,50%),
-        hsl(300,100%,50%),
-        hsl(360,100%,50%)
-      );
+      background: #111;
       border: 2px solid var(--glow);
       border-radius: 10px;
       box-shadow: 0 0 15px var(--glow);
@@ -75,13 +67,16 @@
       padding: 1.5vw 3vw;
       border: 0.3vw solid var(--glow);
       border-radius: 1vw;
-      background: rgba(0, 0, 0, 0.6);
+
+      /* DYNAMIC BACKGROUND TRANSPARENCY */
+      background: rgba(0, 0, 0, var(--bgAlpha));
+
       box-shadow: 0 0 2vw var(--glow);
       animation: pulse 2s infinite;
       cursor: pointer;
     }
 
-    /* --- GLITCH LAYER (now color‑synced) --- */
+    /* --- GLITCH LAYER (color synced) --- */
     .widget::after {
       content: "";
       position: absolute;
@@ -89,12 +84,11 @@
       pointer-events: none;
       opacity: 0.6;
       background: hsla(var(--hue), 100%, 50%, 0.15);
-      animation:
-        glitch 1.4s steps(2, end) infinite;
+      animation: glitch 1.4s steps(2, end) infinite;
       z-index: 3;
     }
 
-    /* --- SCANLINES (now color‑synced) --- */
+    /* --- SCANLINES (color synced) --- */
     .scanlayer {
       position: absolute;
       inset: 0;
@@ -186,8 +180,11 @@
 
   <div class="timebox" id="timebox">Loading time...</div>
 
-  <!-- FULL COLOR WHEEL SLIDER -->
+  <!-- COLOR SLIDER -->
   <input type="range" id="colorSlider" min="0" max="360" value="120">
+
+  <!-- BACKGROUND TRANSPARENCY SLIDER -->
+  <input type="range" id="alphaSlider" min="0" max="100" value="60">
 
   <script>
     /* --- FOLLOWER COUNT --- */
@@ -233,6 +230,12 @@
       const hue = e.target.value;
       root.style.setProperty("--hue", hue);
       root.style.setProperty("--glow", `hsl(${hue}, 100%, 50%)`);
+    });
+
+    /* --- BACKGROUND TRANSPARENCY SLIDER --- */
+    document.getElementById("alphaSlider").addEventListener("input", (e) => {
+      const alpha = e.target.value / 100;
+      root.style.setProperty("--bgAlpha", alpha);
     });
 
     /* --- WOLF ICON = RAINBOW TOGGLE --- */
