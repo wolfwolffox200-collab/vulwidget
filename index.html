@@ -6,7 +6,6 @@
   <title>VulSilverFox Followers</title>
 
   <style>
-
     :root {
       --hue: 120;
       --glow: hsl(var(--hue), 100%, 50%);
@@ -54,7 +53,7 @@
         transparent 4px
       );
       opacity: 0.4;
-      z-index: 1;
+      z-index: 2;
     }
 
     /* NEON RADIAL GLOW BEHIND WIDGET */
@@ -69,17 +68,148 @@
       z-index: 0;
     }
 
-    /* CONTROLS WRAPPER */
-    .controls {
+    /* BACKGROUND LAYERS */
+    .bg-layer {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0;
+    }
+
+    .bg-layer.active {
+      opacity: 1;
+    }
+
+    /* PARTICLE FIELD */
+    .bg-particles {
+      background: radial-gradient(circle at 10% 20%, rgba(255,255,255,0.15) 0, transparent 40%),
+                  radial-gradient(circle at 80% 30%, rgba(255,255,255,0.12) 0, transparent 45%),
+                  radial-gradient(circle at 30% 80%, rgba(255,255,255,0.1) 0, transparent 40%);
+      animation: particlesMove 20s linear infinite alternate;
+      mix-blend-mode: screen;
+    }
+
+    @keyframes particlesMove {
+      0% { transform: translate3d(0,0,0); }
+      50% { transform: translate3d(-20px, 10px, 0); }
+      100% { transform: translate3d(20px, -10px, 0); }
+    }
+
+    /* GRID FLOOR */
+    .bg-grid {
+      background:
+        linear-gradient(rgba(255,255,255,0.15) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.15) 1px, transparent 1px);
+      background-size: 40px 40px;
+      transform-origin: center bottom;
+      transform: perspective(600px) rotateX(70deg) translateY(20%);
+      opacity: 0;
+      mix-blend-mode: screen;
+      animation: gridGlow 4s ease-in-out infinite alternate;
+    }
+
+    @keyframes gridGlow {
+      0% { opacity: 0.15; }
+      100% { opacity: 0.35; }
+    }
+
+    /* AURORA WAVE */
+    .bg-aurora {
+      background: radial-gradient(circle at 10% 0%, hsla(var(--hue), 100%, 60%, 0.4), transparent 55%),
+                  radial-gradient(circle at 90% 100%, hsla(calc(var(--hue) + 80), 100%, 60%, 0.35), transparent 55%);
+      animation: auroraMove 18s ease-in-out infinite alternate;
+      mix-blend-mode: screen;
+    }
+
+    @keyframes auroraMove {
+      0% { transform: translate3d(0,0,0); }
+      50% { transform: translate3d(-40px, 20px, 0); }
+      100% { transform: translate3d(40px, -20px, 0); }
+    }
+
+    /* CONTROLS PANEL */
+    .controls-panel {
+      position: fixed;
+      top: 50%;
+      right: 0;
+      transform: translateY(-50%) translateX(100%);
+      width: 260px;
+      background: rgba(0,0,0,0.85);
+      border-left: 2px solid var(--glow);
+      box-shadow: 0 0 20px var(--glow);
+      padding: 15px 15px 20px;
       display: flex;
       flex-direction: column;
       gap: 10px;
+      z-index: 30;
+      color: #fff;
+    }
+
+    body.settings-open .controls-panel {
+      transform: translateY(-50%) translateX(0);
+    }
+
+    .controls-panel h2 {
+      margin: 0 0 5px;
+      font-size: 16px;
+      text-shadow: 0 0 10px var(--glow);
+    }
+
+    .controls-panel h3 {
+      margin: 8px 0 4px;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      opacity: 0.8;
+    }
+
+    .controls-panel label {
+      font-size: 12px;
+      display: flex;
       align-items: center;
-      z-index: 5;
+      gap: 6px;
+      cursor: pointer;
+    }
+
+    .controls-panel input[type="checkbox"] {
+      accent-color: #0ff;
+      cursor: pointer;
+    }
+
+    .controls-panel .guide {
+      font-size: 11px;
+      line-height: 1.3;
+      margin-top: 6px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      padding-top: 6px;
+      opacity: 0.9;
+    }
+
+    .controls-panel .guide ul {
+      padding-left: 16px;
+      margin: 4px 0 0;
+    }
+
+    .controls-panel .guide li {
+      margin-bottom: 2px;
+    }
+
+    .slider-row {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-bottom: 4px;
+    }
+
+    .slider-row span {
+      font-size: 11px;
+      opacity: 0.8;
     }
 
     /* HIDE UI MODE (smooth fade) */
-    .hide-ui .controls {
+    body.hide-ui .controls-panel,
+    body.hide-ui .timebox {
       opacity: 0;
       pointer-events: none;
     }
@@ -100,8 +230,8 @@
       color: var(--glow);
       box-shadow: 0 0 15px var(--glow);
       cursor: pointer;
-      background: rgba(0,0,0,0.6);
-      z-index: 20;
+      background: rgba(0,0,0,0.7);
+      z-index: 40;
       text-shadow: 0 0 10px var(--glow);
     }
 
@@ -111,14 +241,13 @@
 
     /* SLIDERS */
     #colorSlider, #bgSlider {
-      width: 300px;
+      width: 100%;
       height: 10px;
       border: 2px solid var(--glow);
       border-radius: 10px;
-      box-shadow: 0 0 15px var(--glow);
+      box-shadow: 0 0 10px var(--glow);
       cursor: pointer;
       appearance: none;
-      z-index: 5;
     }
 
     #colorSlider {
@@ -145,11 +274,11 @@
     #colorSlider::-webkit-slider-thumb,
     #bgSlider::-webkit-slider-thumb {
       appearance: none;
-      width: 20px;
-      height: 20px;
+      width: 16px;
+      height: 16px;
       background: var(--glow);
       border-radius: 50%;
-      box-shadow: 0 0 15px var(--glow);
+      box-shadow: 0 0 10px var(--glow);
       cursor: pointer;
     }
 
@@ -173,8 +302,18 @@
 
     /* GLASS MODE */
     .glass {
-      backdrop-filter: blur(10px);
-      background: rgba(255,255,255,0.1) !important;
+      backdrop-filter: blur(14px);
+      background: rgba(255,255,255,0.12) !important;
+      box-shadow: 0 0 30px rgba(255,255,255,0.4);
+    }
+
+    /* CIRCUIT MODE */
+    .circuit {
+      background-image:
+        linear-gradient(90deg, rgba(255,255,255,0.08) 1px, transparent 1px),
+        linear-gradient(rgba(255,255,255,0.08) 1px, transparent 1px);
+      background-size: 20px 20px;
+      background-blend-mode: screen;
     }
 
     /* BORDER FLOW ANIMATION */
@@ -243,6 +382,29 @@
       animation: pop 0.4s ease-out;
     }
 
+    /* EVENT FX */
+    @keyframes shockwave {
+      0% { box-shadow: 0 0 0 0 rgba(255,255,255,0.7); }
+      100% { box-shadow: 0 0 40px 25px rgba(255,255,255,0); }
+    }
+
+    .shockwave {
+      animation: shockwave 0.6s ease-out;
+    }
+
+    @keyframes flash {
+      0% { background-color: rgba(255,255,255,0.6); }
+      100% { background-color: transparent; }
+    }
+
+    .flash-overlay {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 50;
+      animation: flash 0.3s ease-out;
+    }
+
     /* ICON + TEXT */
     .icon {
       width: 6vw;
@@ -271,11 +433,62 @@
       z-index: 5;
     }
 
+    /* RAINBOW PAGE MODE */
+    body.rainbow-page {
+      animation: rainbowPage 8s linear infinite;
+    }
+
+    @keyframes rainbowPage {
+      0%   { --hue: 0; }
+      16%  { --hue: 60; }
+      32%  { --hue: 120; }
+      48%  { --hue: 180; }
+      64%  { --hue: 240; }
+      80%  { --hue: 300; }
+      100% { --hue: 360; }
+    }
+
+    /* HOLOGRAM DISTORTION MODE */
+    body.holo-on {
+      filter: contrast(1.05) saturate(1.1);
+    }
+
+    body.holo-on .widget {
+      filter: drop-shadow(0 0 10px rgba(0,255,255,0.7));
+    }
+
+    /* NEON CURSOR */
+    #neonCursor {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--glow);
+      box-shadow: 0 0 15px var(--glow);
+      pointer-events: none;
+      z-index: 60;
+      transform: translate(-50%, -50%);
+      opacity: 0;
+    }
+
+    body.neon-cursor-on #neonCursor {
+      opacity: 1;
+    }
+
   </style>
 </head>
 
 <body>
 
+  <!-- BACKGROUND LAYERS -->
+  <div class="bg-layer bg-particles" id="bgParticles"></div>
+  <div class="bg-layer bg-grid" id="bgGrid"></div>
+  <div class="bg-layer bg-aurora" id="bgAurora"></div>
+
+  <!-- NEON CURSOR -->
+  <div id="neonCursor"></div>
+
+  <!-- MAIN WIDGET -->
   <div class="widget" id="widget">
     <div class="scanlayer"></div>
     <img class="icon" id="wolfIcon" src="wolf.png" alt="wolf icon">
@@ -284,10 +497,56 @@
 
   <div class="timebox" id="timebox">Loading time...</div>
 
-  <!-- CONTROL PANEL -->
-  <div class="controls" id="controls">
-    <input type="range" id="colorSlider" min="0" max="360" value="120">
-    <input type="range" id="bgSlider" min="0" max="100" value="0">
+  <!-- CONTROL PANEL (SLIDERS + TOGGLES + GUIDE) -->
+  <div class="controls-panel" id="controlsPanel">
+    <h2>VulSilverFox Control Hub</h2>
+
+    <h3>Sliders</h3>
+    <div class="slider-row">
+      <span>Hue</span>
+      <input type="range" id="colorSlider" min="0" max="360" value="120">
+    </div>
+    <div class="slider-row">
+      <span>Background (Black ↔ White)</span>
+      <input type="range" id="bgSlider" min="0" max="100" value="0">
+    </div>
+
+    <h3>Visual Modes</h3>
+    <label><input type="checkbox" id="chkGlass"> Glass mode (G)</label>
+    <label><input type="checkbox" id="chkCircuit"> Circuit mode (C)</label>
+    <label><input type="checkbox" id="chkRainbowPage"> Full-page rainbow (R)</label>
+    <label><input type="checkbox" id="chkHolo"> Hologram distortion (D)</label>
+    <label><input type="checkbox" id="chkParticles"> Particle field (P)</label>
+    <label><input type="checkbox" id="chkGrid"> Grid floor (F)</label>
+    <label><input type="checkbox" id="chkAurora"> Aurora waves (A)</label>
+    <label><input type="checkbox" id="chkNeonCursor"> Neon cursor (N)</label>
+
+    <h3>Presets</h3>
+    <label>Cold mode (8)</label>
+    <label>Warm mode (9)</label>
+    <label>Default reset (0)</label>
+
+    <h3>Guide</h3>
+    <div class="guide">
+      <ul>
+        <li><b>Gear</b>: open/close this panel</li>
+        <li><b>H</b>: hide/show UI (panel + time)</li>
+        <li><b>G</b>: toggle glass mode</li>
+        <li><b>C</b>: toggle circuit mode</li>
+        <li><b>R</b>: full-page rainbow cycle</li>
+        <li><b>D</b>: hologram distortion</li>
+        <li><b>P</b>: particle background</li>
+        <li><b>F</b>: grid floor background</li>
+        <li><b>A</b>: aurora background</li>
+        <li><b>N</b>: neon cursor</li>
+        <li><b>1/2/3</b>: hue presets</li>
+        <li><b>8</b>: cold theme, <b>9</b>: warm theme</li>
+        <li><b>0</b>: reset theme</li>
+        <li><b>X</b>: shockwave on widget</li>
+        <li><b>Z</b>: screen flash</li>
+        <li><b>Click wolf</b>: widget rainbow mode</li>
+      </ul>
+    </div>
   </div>
 
   <!-- GEAR BUTTON -->
@@ -329,22 +588,41 @@
     const root = document.documentElement;
     const widget = document.getElementById("widget");
     const gear = document.getElementById("gear");
+    const neonCursor = document.getElementById("neonCursor");
+
+    const chkGlass = document.getElementById("chkGlass");
+    const chkCircuit = document.getElementById("chkCircuit");
+    const chkRainbowPage = document.getElementById("chkRainbowPage");
+    const chkHolo = document.getElementById("chkHolo");
+    const chkParticles = document.getElementById("chkParticles");
+    const chkGrid = document.getElementById("chkGrid");
+    const chkAurora = document.getElementById("chkAurora");
+    const chkNeonCursor = document.getElementById("chkNeonCursor");
+
+    const bgParticles = document.getElementById("bgParticles");
+    const bgGrid = document.getElementById("bgGrid");
+    const bgAurora = document.getElementById("bgAurora");
+
+    const colorSlider = document.getElementById("colorSlider");
+    const bgSlider = document.getElementById("bgSlider");
 
     /* COLOR SLIDER */
-    document.getElementById("colorSlider").addEventListener("input", (e) => {
+    colorSlider.addEventListener("input", (e) => {
       widget.classList.remove("rainbow-mode");
       const hue = e.target.value;
       root.style.setProperty("--hue", hue);
       root.style.setProperty("--glow", `hsl(${hue}, 100%, 50%)`);
+      saveState();
     });
 
     /* BACKGROUND SLIDER */
-    document.getElementById("bgSlider").addEventListener("input", (e) => {
+    bgSlider.addEventListener("input", (e) => {
       const lightness = e.target.value;
       root.style.setProperty("--bgLightness", lightness + "%");
+      saveState();
     });
 
-    /* RAINBOW MODE TOGGLE */
+    /* RAINBOW MODE TOGGLE (widget only) */
     let rainbowOn = false;
     document.getElementById("wolfIcon").addEventListener("click", () => {
       rainbowOn = !rainbowOn;
@@ -363,6 +641,11 @@
       widget.style.transform = "rotateX(0deg) rotateY(0deg)";
     });
 
+    /* GEAR TOGGLE FOR PANEL */
+    gear.addEventListener("click", () => {
+      document.body.classList.toggle("settings-open");
+    });
+
     /* HIDE UI (H) */
     document.addEventListener("keydown", (e) => {
       if (e.key.toLowerCase() === "h") {
@@ -370,24 +653,227 @@
       }
     });
 
-    /* GEAR TOGGLE FOR CONTROLS */
-    gear.addEventListener("click", () => {
-      document.body.classList.toggle("hide-ui");
-    });
-
     /* GLASS MODE (G) */
+    function toggleGlass() {
+      widget.classList.toggle("glass");
+      chkGlass.checked = widget.classList.contains("glass");
+      saveState();
+    }
+
+    /* CIRCUIT MODE (C) */
+    function toggleCircuit() {
+      widget.classList.toggle("circuit");
+      chkCircuit.checked = widget.classList.contains("circuit");
+      saveState();
+    }
+
+    /* RAINBOW PAGE (R) */
+    function toggleRainbowPage() {
+      document.body.classList.toggle("rainbow-page");
+      chkRainbowPage.checked = document.body.classList.contains("rainbow-page");
+      saveState();
+    }
+
+    /* HOLOGRAM (D) */
+    function toggleHolo() {
+      document.body.classList.toggle("holo-on");
+      chkHolo.checked = document.body.classList.contains("holo-on");
+      saveState();
+    }
+
+    /* PARTICLES (P) */
+    function toggleParticles() {
+      bgParticles.classList.toggle("active");
+      chkParticles.checked = bgParticles.classList.contains("active");
+      saveState();
+    }
+
+    /* GRID (F) */
+    function toggleGrid() {
+      bgGrid.classList.toggle("active");
+      chkGrid.checked = bgGrid.classList.contains("active");
+      saveState();
+    }
+
+    /* AURORA (A) */
+    function toggleAurora() {
+      bgAurora.classList.toggle("active");
+      chkAurora.checked = bgAurora.classList.contains("active");
+      saveState();
+    }
+
+    /* NEON CURSOR (N) */
+    function toggleNeonCursor() {
+      document.body.classList.toggle("neon-cursor-on");
+      chkNeonCursor.checked = document.body.classList.contains("neon-cursor-on");
+      saveState();
+    }
+
+    /* CHECKBOX SYNC */
+    chkGlass.addEventListener("change", toggleGlass);
+    chkCircuit.addEventListener("change", toggleCircuit);
+    chkRainbowPage.addEventListener("change", toggleRainbowPage);
+    chkHolo.addEventListener("change", toggleHolo);
+    chkParticles.addEventListener("change", toggleParticles);
+    chkGrid.addEventListener("change", toggleGrid);
+    chkAurora.addEventListener("change", toggleAurora);
+    chkNeonCursor.addEventListener("change", toggleNeonCursor);
+
+    /* KEYBOARD SHORTCUTS */
     document.addEventListener("keydown", (e) => {
-      if (e.key.toLowerCase() === "g") {
-        widget.classList.toggle("glass");
+      const key = e.key.toLowerCase();
+
+      if (key === "g") toggleGlass();
+      if (key === "c") toggleCircuit();
+      if (key === "r") toggleRainbowPage();
+      if (key === "d") toggleHolo();
+      if (key === "p") toggleParticles();
+      if (key === "f") toggleGrid();
+      if (key === "a") toggleAurora();
+      if (key === "n") toggleNeonCursor();
+
+      /* THEME PRESETS */
+      if (e.key === "1") {
+        root.style.setProperty("--hue", 200);
+        root.style.setProperty("--glow", `hsl(200, 100%, 50%)`);
+        colorSlider.value = 200;
+        saveState();
+      }
+      if (e.key === "2") {
+        root.style.setProperty("--hue", 120);
+        root.style.setProperty("--glow", `hsl(120, 100%, 50%)`);
+        colorSlider.value = 120;
+        saveState();
+      }
+      if (e.key === "3") {
+        root.style.setProperty("--hue", 300);
+        root.style.setProperty("--glow", `hsl(300, 100%, 50%)`);
+        colorSlider.value = 300;
+        saveState();
+      }
+
+      /* COLD MODE (8) */
+      if (e.key === "8") {
+        root.style.setProperty("--hue", 200);
+        root.style.setProperty("--glow", `hsl(200, 100%, 60%)`);
+        colorSlider.value = 200;
+        bgSlider.value = 10;
+        root.style.setProperty("--bgLightness", "10%");
+        widget.classList.add("glass");
+        chkGlass.checked = true;
+        saveState();
+      }
+
+      /* WARM MODE (9) */
+      if (e.key === "9") {
+        root.style.setProperty("--hue", 30);
+        root.style.setProperty("--glow", `hsl(30, 100%, 55%)`);
+        colorSlider.value = 30;
+        bgSlider.value = 5;
+        root.style.setProperty("--bgLightness", "5%");
+        widget.classList.remove("glass");
+        chkGlass.checked = false;
+        saveState();
+      }
+
+      /* RESET (0) */
+      if (e.key === "0") {
+        root.style.setProperty("--hue", 120);
+        root.style.setProperty("--glow", `hsl(120, 100%, 50%)`);
+        colorSlider.value = 120;
+        bgSlider.value = 0;
+        root.style.setProperty("--bgLightness", "0%");
+        widget.classList.remove("glass", "circuit");
+        document.body.classList.remove("rainbow-page", "holo-on", "neon-cursor-on");
+        bgParticles.classList.remove("active");
+        bgGrid.classList.remove("active");
+        bgAurora.classList.remove("active");
+        chkGlass.checked = false;
+        chkCircuit.checked = false;
+        chkRainbowPage.checked = false;
+        chkHolo.checked = false;
+        chkParticles.checked = false;
+        chkGrid.checked = false;
+        chkAurora.checked = false;
+        chkNeonCursor.checked = false;
+        saveState();
+      }
+
+      /* EVENT FX */
+      if (key === "x") {
+        widget.classList.add("shockwave");
+        setTimeout(() => widget.classList.remove("shockwave"), 600);
+      }
+
+      if (key === "z") {
+        const flash = document.createElement("div");
+        flash.className = "flash-overlay";
+        document.body.appendChild(flash);
+        setTimeout(() => flash.remove(), 300);
       }
     });
 
-    /* THEME PRESETS (1,2,3) */
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "1") root.style.setProperty("--hue", 200);
-      if (e.key === "2") root.style.setProperty("--hue", 120);
-      if (e.key === "3") root.style.setProperty("--hue", 300);
+    /* NEON CURSOR FOLLOW */
+    document.addEventListener("mousemove", (e) => {
+      neonCursor.style.left = e.clientX + "px";
+      neonCursor.style.top = e.clientY + "px";
     });
+
+    /* STATE PERSISTENCE */
+    function saveState() {
+      const state = {
+        hue: getComputedStyle(root).getPropertyValue("--hue").trim(),
+        bgLightness: getComputedStyle(root).getPropertyValue("--bgLightness").trim(),
+        glass: widget.classList.contains("glass"),
+        circuit: widget.classList.contains("circuit"),
+        rainbowPage: document.body.classList.contains("rainbow-page"),
+        holo: document.body.classList.contains("holo-on"),
+        particles: bgParticles.classList.contains("active"),
+        grid: bgGrid.classList.contains("active"),
+        aurora: bgAurora.classList.contains("active"),
+        neonCursor: document.body.classList.contains("neon-cursor-on")
+      };
+      localStorage.setItem("vulWidgetState", JSON.stringify(state));
+    }
+
+    function loadState() {
+      const raw = localStorage.getItem("vulWidgetState");
+      if (!raw) return;
+      try {
+        const state = JSON.parse(raw);
+        if (state.hue) {
+          root.style.setProperty("--hue", state.hue);
+          root.style.setProperty("--glow", `hsl(${state.hue}, 100%, 50%)`);
+          colorSlider.value = parseInt(state.hue, 10);
+        }
+        if (state.bgLightness) {
+          root.style.setProperty("--bgLightness", state.bgLightness);
+          bgSlider.value = parseInt(state.bgLightness, 10);
+        }
+
+        if (state.glass) widget.classList.add("glass");
+        if (state.circuit) widget.classList.add("circuit");
+        if (state.rainbowPage) document.body.classList.add("rainbow-page");
+        if (state.holo) document.body.classList.add("holo-on");
+        if (state.particles) bgParticles.classList.add("active");
+        if (state.grid) bgGrid.classList.add("active");
+        if (state.aurora) bgAurora.classList.add("active");
+        if (state.neonCursor) document.body.classList.add("neon-cursor-on");
+
+        chkGlass.checked = !!state.glass;
+        chkCircuit.checked = !!state.circuit;
+        chkRainbowPage.checked = !!state.rainbowPage;
+        chkHolo.checked = !!state.holo;
+        chkParticles.checked = !!state.particles;
+        chkGrid.checked = !!state.grid;
+        chkAurora.checked = !!state.aurora;
+        chkNeonCursor.checked = !!state.neonCursor;
+      } catch (e) {
+        console.warn("Failed to load state", e);
+      }
+    }
+
+    loadState();
   </script>
 
 </body>
