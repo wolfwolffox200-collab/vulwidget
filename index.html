@@ -10,12 +10,12 @@
     :root {
       --hue: 120;
       --glow: hsl(var(--hue), 100%, 50%);
-      --bgLightness: 0; /* 0 = black, 100 = white */
+      --bgLightness: 0%; /* must be a % */
     }
 
     html, body {
       margin: 0;
-      background: #000; /* 🔥 SOLID BLACK PAGE BACKGROUND */
+      background: #000; /* solid black page */
       font-family: 'Orbitron', sans-serif;
       display: flex;
       flex-direction: column;
@@ -262,7 +262,7 @@
 
     document.getElementById("bgSlider").addEventListener("input", (e) => {
       const lightness = e.target.value;
-      root.style.setProperty("--bgLightness", lightness);
+      root.style.setProperty("--bgLightness", lightness + "%"); /* FIXED */
     });
 
     let rainbowOn = false;
