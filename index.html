@@ -127,6 +127,16 @@
       z-index: 5;
     }
 
+    /* --- TIME + DATE DISPLAY --- */
+    .timebox {
+      font-size: 1.8vw;
+      text-shadow: 0 0 1vw var(--glow);
+      border: 0.2vw solid var(--glow);
+      padding: 10px 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 1.5vw var(--glow);
+    }
+
     @keyframes pulse {
       0% { box-shadow: 0 0 1vw var(--glow); }
       50% { box-shadow: 0 0 2.2vw var(--glow); }
@@ -145,7 +155,11 @@
     <div class="count">Followers: <span id="num">...</span></div>
   </div>
 
+  <!-- DATE + TIME BOX -->
+  <div class="timebox" id="timebox">Loading time...</div>
+
   <script>
+    /* --- FOLLOWER COUNT --- */
     async function loadCount() {
       const res = await fetch("https://decapi.me/twitch/followcount/vulsilverfox");
       const text = await res.text();
@@ -154,6 +168,30 @@
 
     loadCount();
     setInterval(loadCount, 30000);
+
+    /* --- LIVE EST CLOCK --- */
+    function updateClock() {
+      const now = new Date();
+      const est = new Date(now.toLocaleString("en-US", { timeZone: "America/New_York" }));
+
+      const time = est.toLocaleTimeString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit"
+      });
+
+      const date = est.toLocaleDateString("en-US", {
+        weekday: "long",
+        month: "long",
+        day: "numeric",
+        year: "numeric"
+      });
+
+      document.getElementById("timebox").textContent = `${date} — ${time} EST`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
 
     /* --- COLOR BUTTON LOGIC --- */
     const colors = [
