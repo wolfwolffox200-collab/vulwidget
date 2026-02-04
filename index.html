@@ -45,25 +45,6 @@
       cursor: pointer;
     }
 
-    /* Tiny rainbow toggle button */
-    #rainbowToggle {
-      width: 40px;
-      height: 40px;
-      font-size: 20px;
-      background: #111;
-      color: var(--glow);
-      border: 2px solid var(--glow);
-      border-radius: 50%;
-      cursor: pointer;
-      text-shadow: 0 0 10px var(--glow);
-      box-shadow: 0 0 15px var(--glow);
-      transition: 0.2s;
-    }
-
-    #rainbowToggle:hover {
-      box-shadow: 0 0 25px var(--glow);
-    }
-
     .widget {
       position: relative;
       overflow: hidden;
@@ -76,6 +57,7 @@
       background: rgba(0, 0, 0, 0.6);
       box-shadow: 0 0 2vw var(--glow);
       animation: pulse 2s infinite;
+      cursor: pointer; /* wolf icon toggle */
     }
 
     /* --- GLITCH LAYER --- */
@@ -142,6 +124,7 @@
       max-height: 80px;
       filter: drop-shadow(0 0 1vw var(--glow));
       z-index: 5;
+      cursor: pointer; /* wolf icon clickable */
     }
 
     .count {
@@ -171,20 +154,17 @@
 
 <body>
 
-  <!-- COLOR SLIDER -->
-  <input type="range" id="colorSlider" min="0" max="6" value="3">
-
-  <!-- TINY RAINBOW TOGGLE BUTTON -->
-  <button id="rainbowToggle">R</button>
-
   <div class="widget" id="widget">
     <div class="scanlayer"></div>
-    <img class="icon" src="wolf.png" alt="wolf icon">
+    <img class="icon" id="wolfIcon" src="wolf.png" alt="wolf icon">
     <div class="count">Followers: <span id="num">...</span></div>
   </div>
 
   <!-- DATE + TIME BOX -->
   <div class="timebox" id="timebox">Loading time...</div>
+
+  <!-- SLIDER BELOW DATE -->
+  <input type="range" id="colorSlider" min="0" max="6" value="3">
 
   <script>
     /* --- FOLLOWER COUNT --- */
@@ -232,10 +212,10 @@
       root.style.setProperty("--glow", colors[index]);
     });
 
-    /* --- RAINBOW TOGGLE BUTTON --- */
+    /* --- WOLF ICON = RAINBOW TOGGLE --- */
     let rainbowOn = false;
 
-    document.getElementById("rainbowToggle").addEventListener("click", () => {
+    document.getElementById("wolfIcon").addEventListener("click", () => {
       rainbowOn = !rainbowOn;
 
       if (rainbowOn) {
