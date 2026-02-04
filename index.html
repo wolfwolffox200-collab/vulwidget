@@ -6,7 +6,7 @@
 
   <style>
     :root {
-      --glow: #00ff00;
+      --glow: hsl(120, 100%, 50%); /* default green */
     }
 
     body {
@@ -23,11 +23,31 @@
       gap: 20px;
     }
 
+    /* Smooth transitions for EVERYTHING */
+    * {
+      transition: 
+        color 0.3s linear,
+        border-color 0.3s linear,
+        box-shadow 0.3s linear,
+        text-shadow 0.3s linear,
+        filter 0.3s linear,
+        background 0.3s linear;
+    }
+
     /* Slider styling */
     input[type="range"] {
       width: 300px;
       height: 10px;
-      background: #111;
+      background: linear-gradient(
+        to right,
+        hsl(0,100%,50%),
+        hsl(60,100%,50%),
+        hsl(120,100%,50%),
+        hsl(180,100%,50%),
+        hsl(240,100%,50%),
+        hsl(300,100%,50%),
+        hsl(360,100%,50%)
+      );
       border: 2px solid var(--glow);
       border-radius: 10px;
       box-shadow: 0 0 15px var(--glow);
@@ -57,7 +77,7 @@
       background: rgba(0, 0, 0, 0.6);
       box-shadow: 0 0 2vw var(--glow);
       animation: pulse 2s infinite;
-      cursor: pointer; /* wolf icon toggle */
+      cursor: pointer;
     }
 
     /* --- GLITCH LAYER --- */
@@ -104,13 +124,13 @@
 
     /* --- RAINBOW CYCLE MODE --- */
     @keyframes rainbowCycle {
-      0%   { --glow: red; }
-      16%  { --glow: orange; }
-      32%  { --glow: yellow; }
-      48%  { --glow: green; }
-      64%  { --glow: blue; }
-      80%  { --glow: indigo; }
-      100% { --glow: violet; }
+      0%   { --glow: hsl(0,100%,50%); }
+      16%  { --glow: hsl(60,100%,50%); }
+      32%  { --glow: hsl(120,100%,50%); }
+      48%  { --glow: hsl(180,100%,50%); }
+      64%  { --glow: hsl(240,100%,50%); }
+      80%  { --glow: hsl(300,100%,50%); }
+      100% { --glow: hsl(360,100%,50%); }
     }
 
     .rainbow-mode {
@@ -124,7 +144,7 @@
       max-height: 80px;
       filter: drop-shadow(0 0 1vw var(--glow));
       z-index: 5;
-      cursor: pointer; /* wolf icon clickable */
+      cursor: pointer;
     }
 
     .count {
@@ -134,7 +154,6 @@
       z-index: 5;
     }
 
-    /* --- TIME + DATE DISPLAY --- */
     .timebox {
       font-size: 1.8vw;
       text-shadow: 0 0 1vw var(--glow);
@@ -160,11 +179,10 @@
     <div class="count">Followers: <span id="num">...</span></div>
   </div>
 
-  <!-- DATE + TIME BOX -->
   <div class="timebox" id="timebox">Loading time...</div>
 
-  <!-- SLIDER BELOW DATE -->
-  <input type="range" id="colorSlider" min="0" max="6" value="3">
+  <!-- FULL COLOR WHEEL SLIDER -->
+  <input type="range" id="colorSlider" min="0" max="360" value="120">
 
   <script>
     /* --- FOLLOWER COUNT --- */
@@ -201,15 +219,14 @@
     updateClock();
     setInterval(updateClock, 1000);
 
-    /* --- COLOR SLIDER LOGIC --- */
-    const colors = ["red", "orange", "yellow", "green", "blue", "indigo", "violet"];
+    /* --- FULL COLOR WHEEL SLIDER --- */
     const root = document.documentElement;
     const widget = document.getElementById("widget");
 
     document.getElementById("colorSlider").addEventListener("input", (e) => {
       widget.classList.remove("rainbow-mode");
-      const index = parseInt(e.target.value);
-      root.style.setProperty("--glow", colors[index]);
+      const hue = e.target.value;
+      root.style.setProperty("--glow", `hsl(${hue}, 100%, 50%)`);
     });
 
     /* --- WOLF ICON = RAINBOW TOGGLE --- */
