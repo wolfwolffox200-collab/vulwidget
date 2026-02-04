@@ -10,12 +10,15 @@
     :root {
       --hue: 120;
       --glow: hsl(var(--hue), 100%, 50%);
-      --bgLightness: 0%; /* must be a % */
+      --bgLightness: 0%; /* must be % */
     }
 
     html, body {
       margin: 0;
-      background: #000; /* solid black page */
+
+      /* ⭐ PAGE BACKGROUND NOW CONTROLLED BY SLIDER */
+      background: hsl(0, 0%, var(--bgLightness));
+
       font-family: 'Orbitron', sans-serif;
       display: flex;
       flex-direction: column;
@@ -104,7 +107,7 @@
       border: 0.3vw solid var(--glow);
       border-radius: 1vw;
 
-      /* BLACK → WHITE BACKGROUND */
+      /* Widget background ALSO follows slider */
       background: hsl(0, 0%, var(--bgLightness));
 
       box-shadow: 0 0 2vw var(--glow);
@@ -262,7 +265,9 @@
 
     document.getElementById("bgSlider").addEventListener("input", (e) => {
       const lightness = e.target.value;
-      root.style.setProperty("--bgLightness", lightness + "%"); /* FIXED */
+
+      /* ⭐ FIXED: apply % so HSL works */
+      root.style.setProperty("--bgLightness", lightness + "%");
     });
 
     let rainbowOn = false;
