@@ -8,12 +8,12 @@
     :root {
       --hue: 120; /* default hue */
       --glow: hsl(var(--hue), 100%, 50%);
-      --bgAlpha: 0.6; /* default widget background transparency */
+      --bgAlpha: 0.6; /* widget background transparency */
     }
 
     body {
       margin: 0;
-      background: #000;
+      background: transparent; /* FULL PAGE TRANSPARENT */
       font-family: 'Orbitron', sans-serif;
       display: flex;
       flex-direction: column;
@@ -36,11 +36,20 @@
         background 0.3s linear;
     }
 
-    /* Slider styling */
+    /* COLOR SLIDER (FULL RAINBOW GRADIENT) */
     input[type="range"] {
       width: 300px;
       height: 10px;
-      background: #111;
+      background: linear-gradient(
+        to right,
+        hsl(0,100%,50%),
+        hsl(60,100%,50%),
+        hsl(120,100%,50%),
+        hsl(180,100%,50%),
+        hsl(240,100%,50%),
+        hsl(300,100%,50%),
+        hsl(360,100%,50%)
+      );
       border: 2px solid var(--glow);
       border-radius: 10px;
       box-shadow: 0 0 15px var(--glow);
