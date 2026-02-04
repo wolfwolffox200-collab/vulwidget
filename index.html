@@ -3,17 +3,41 @@
 <head>
   <meta charset="UTF-8" />
   <title>VulSilverFox Followers</title>
+
   <style>
+    :root {
+      --glow: #00ff00;
+    }
+
     body {
       margin: 0;
       background: #000;
       font-family: 'Orbitron', sans-serif;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
       width: 100vw;
       height: 100vh;
-      color: #00ff00;
+      color: var(--glow);
+      gap: 20px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 18px;
+      background: #111;
+      color: var(--glow);
+      border: 2px solid var(--glow);
+      border-radius: 8px;
+      cursor: pointer;
+      text-shadow: 0 0 10px var(--glow);
+      box-shadow: 0 0 15px var(--glow);
+      transition: 0.2s;
+    }
+
+    button:hover {
+      box-shadow: 0 0 25px var(--glow);
     }
 
     .widget {
@@ -23,14 +47,14 @@
       align-items: center;
       gap: 2vw;
       padding: 1.5vw 3vw;
-      border: 0.3vw solid #00ff00;
+      border: 0.3vw solid var(--glow);
       border-radius: 1vw;
       background: rgba(0, 0, 0, 0.6);
-      box-shadow: 0 0 2vw #00ff00;
+      box-shadow: 0 0 2vw var(--glow);
       animation: pulse 2s infinite;
     }
 
-    /* --- GLITCH LAYER (horizontal jitter only) --- */
+    /* --- GLITCH LAYER --- */
     .widget::after {
       content: "";
       position: absolute;
@@ -41,19 +65,17 @@
       z-index: 3;
     }
 
-    /* --- SCANLINE LAYER (vertical drift only) --- */
+    /* --- SCANLINES --- */
     .scanlayer {
       position: absolute;
       inset: 0;
       pointer-events: none;
-
       background: repeating-linear-gradient(
         to bottom,
         rgba(0, 255, 0, 0.15) 0px,
         rgba(0, 255, 0, 0.15) 6px,
         rgba(0, 255, 0, 0.00) 12px
       );
-
       animation: scanMove 4s linear infinite;
       opacity: 0.6;
       z-index: 2;
@@ -74,32 +96,50 @@
       100% { transform: translateX(0); opacity: 0.6; }
     }
 
+    /* --- RAINBOW CYCLE MODE --- */
+    @keyframes rainbowCycle {
+      0%   { --glow: red; }
+      16%  { --glow: orange; }
+      32%  { --glow: yellow; }
+      48%  { --glow: green; }
+      64%  { --glow: blue; }
+      80%  { --glow: indigo; }
+      100% { --glow: violet; }
+    }
+
+    .rainbow-mode {
+      animation: rainbowCycle 4s linear infinite;
+    }
+
     .icon {
       width: 6vw;
       height: 6vw;
       max-width: 80px;
       max-height: 80px;
-      filter: drop-shadow(0 0 1vw #00ff00);
+      filter: drop-shadow(0 0 1vw var(--glow));
       z-index: 5;
     }
 
     .count {
       font-size: 3vw;
-      text-shadow: 0 0 1vw #00ff00;
+      text-shadow: 0 0 1vw var(--glow);
       white-space: nowrap;
       z-index: 5;
     }
 
     @keyframes pulse {
-      0% { box-shadow: 0 0 1vw #00ff00; }
-      50% { box-shadow: 0 0 2.2vw #00ff00; }
-      100% { box-shadow: 0 0 1vw #00ff00; }
+      0% { box-shadow: 0 0 1vw var(--glow); }
+      50% { box-shadow: 0 0 2.2vw var(--glow); }
+      100% { box-shadow: 0 0 1vw var(--glow); }
     }
   </style>
 </head>
+
 <body>
 
-  <div class="widget">
+  <button id="colorBtn">Change Color</button>
+
+  <div class="widget" id="widget">
     <div class="scanlayer"></div>
     <img class="icon" src="wolf.png" alt="wolf icon">
     <div class="count">Followers: <span id="num">...</span></div>
@@ -114,6 +154,33 @@
 
     loadCount();
     setInterval(loadCount, 30000);
+
+    /* --- COLOR BUTTON LOGIC --- */
+    const colors = [
+      "red",
+      "orange",
+      "yellow",
+      "green",
+      "blue",
+      "indigo",
+      "violet"
+    ];
+
+    let index = 0;
+    const root = document.documentElement;
+    const widget = document.getElementById("widget");
+
+    document.getElementById("colorBtn").addEventListener("click", () => {
+      widget.classList.remove("rainbow-mode");
+
+      if (index < colors.length) {
+        root.style.setProperty("--glow", colors[index]);
+        index++;
+      } else {
+        widget.classList.add("rainbow-mode");
+        index = 0;
+      }
+    });
   </script>
 
 </body>
