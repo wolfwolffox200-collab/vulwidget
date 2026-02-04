@@ -7,24 +7,15 @@
 
   <style>
 
-    /* 🔥 FORCE TRUE TRANSPARENCY (fixes Vercel/Chrome white background) */
-    html {
-      background-color: rgba(0,0,0,0) !important;
-    }
-    body {
-      background-color: rgba(0,0,0,0) !important;
-    }
-
     :root {
       --hue: 120;
       --glow: hsl(var(--hue), 100%, 50%);
-      --bgAlpha: 0.6;
+      --bgLightness: 0; /* 0 = black, 100 = white */
     }
 
-    /* FULL PAGE TRANSPARENCY */
     html, body {
       margin: 0;
-      background: transparent !important;
+      background: transparent;
       font-family: 'Orbitron', sans-serif;
       display: flex;
       flex-direction: column;
@@ -77,14 +68,14 @@
       cursor: pointer;
     }
 
-    /* BOTTOM ALPHA SLIDER (GRAYSCALE) */
-    #alphaSlider {
+    /* BOTTOM BACKGROUND BRIGHTNESS SLIDER (BLACK → WHITE) */
+    #bgSlider {
       width: 300px;
       height: 10px;
       background: linear-gradient(
         to right,
-        rgba(0,0,0,0),
-        rgba(0,0,0,1)
+        hsl(0,0%,0%),
+        hsl(0,0%,100%)
       );
       border: 2px solid var(--glow);
       border-radius: 10px;
@@ -93,7 +84,7 @@
       appearance: none;
     }
 
-    #alphaSlider::-webkit-slider-thumb {
+    #bgSlider::-webkit-slider-thumb {
       appearance: none;
       width: 20px;
       height: 20px;
@@ -112,7 +103,10 @@
       padding: 1.5vw 3vw;
       border: 0.3vw solid var(--glow);
       border-radius: 1vw;
-      background: rgba(0, 0, 0, var(--bgAlpha));
+
+      /* NEW: BLACK → WHITE BACKGROUND */
+      background: hsl(0, 0%, var(--bgLightness));
+
       box-shadow: 0 0 2vw var(--glow);
       animation: pulse 2s infinite;
       cursor: pointer;
@@ -220,8 +214,8 @@
   <!-- COLOR SLIDER -->
   <input type="range" id="colorSlider" min="0" max="360" value="120">
 
-  <!-- ALPHA SLIDER -->
-  <input type="range" id="alphaSlider" min="0" max="100" value="60">
+  <!-- BACKGROUND BLACK ↔ WHITE SLIDER -->
+  <input type="range" id="bgSlider" min="0" max="100" value="0">
 
   <script>
     async function loadCount() {
@@ -266,9 +260,9 @@
       root.style.setProperty("--glow", `hsl(${hue}, 100%, 50%)`);
     });
 
-    document.getElementById("alphaSlider").addEventListener("input", (e) => {
-      const alpha = e.target.value / 100;
-      root.style.setProperty("--bgAlpha", alpha);
+    document.getElementById("bgSlider").addEventListener("input", (e) => {
+      const lightness = e.target.value;
+      root.style.setProperty("--bgLightness", lightness);
     });
 
     let rainbowOn = false;
