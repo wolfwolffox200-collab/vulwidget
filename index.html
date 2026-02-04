@@ -17,8 +17,8 @@
     }
 
     .widget {
-      position: relative; /* needed for scanline overlay */
-      overflow: hidden;   /* keeps scanlines inside */
+      position: relative;
+      overflow: hidden;
       display: flex;
       align-items: center;
       gap: 2vw;
@@ -30,14 +30,23 @@
       animation: pulse 2s infinite;
     }
 
-    /* --- WIDE SCANLINES + GLITCH EFFECT --- */
+    /* --- GLITCH LAYER (horizontal jitter only) --- */
     .widget::after {
       content: "";
       position: absolute;
       inset: 0;
       pointer-events: none;
+      opacity: 0.6;
+      animation: glitch 1.4s steps(2, end) infinite;
+      z-index: 3;
+    }
 
-      /* Wider scanlines */
+    /* --- SCANLINE LAYER (vertical drift only) --- */
+    .scanlayer {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+
       background: repeating-linear-gradient(
         to bottom,
         rgba(0, 255, 0, 0.15) 0px,
@@ -45,12 +54,9 @@
         rgba(0, 255, 0, 0.00) 12px
       );
 
-      /* Scanline drift + glitch flicker */
-      animation:
-        scanMove 4s linear infinite,
-        glitch 1.4s steps(2, end) infinite;
-
+      animation: scanMove 4s linear infinite;
       opacity: 0.6;
+      z-index: 2;
     }
 
     @keyframes scanMove {
@@ -74,13 +80,14 @@
       max-width: 80px;
       max-height: 80px;
       filter: drop-shadow(0 0 1vw #00ff00);
+      z-index: 5;
     }
 
     .count {
       font-size: 3vw;
-      max-font-size: 32px; /* ignored but harmless */
       text-shadow: 0 0 1vw #00ff00;
       white-space: nowrap;
+      z-index: 5;
     }
 
     @keyframes pulse {
@@ -93,6 +100,7 @@
 <body>
 
   <div class="widget">
+    <div class="scanlayer"></div>
     <img class="icon" src="wolf.png" alt="wolf icon">
     <div class="count">Followers: <span id="num">...</span></div>
   </div>
