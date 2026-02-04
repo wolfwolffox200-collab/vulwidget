@@ -10,15 +10,12 @@
     :root {
       --hue: 120;
       --glow: hsl(var(--hue), 100%, 50%);
-      --bgLightness: 0%; /* must be % */
+      --bgLightness: 0%;
     }
 
     html, body {
       margin: 0;
-
-      /* ⭐ PAGE BACKGROUND NOW CONTROLLED BY SLIDER */
       background: hsl(0, 0%, var(--bgLightness));
-
       font-family: 'Orbitron', sans-serif;
       display: flex;
       flex-direction: column;
@@ -28,6 +25,8 @@
       height: 100vh;
       color: var(--glow);
       gap: 20px;
+      overflow: hidden;
+      position: relative;
     }
 
     * {
@@ -37,13 +36,51 @@
         box-shadow 0.3s linear,
         text-shadow 0.3s linear,
         filter 0.3s linear,
-        background 0.3s linear;
+        background 0.3s linear,
+        opacity 0.3s ease;
     }
 
-    /* TOP COLOR SLIDER (RAINBOW) */
-    #colorSlider {
+    /* GLOBAL SCANLINES */
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,0.03) 0px,
+        rgba(255,255,255,0.03) 2px,
+        transparent 4px
+      );
+      opacity: 0.4;
+      z-index: 1;
+    }
+
+    /* NEON RADIAL GLOW BEHIND WIDGET */
+    body::before {
+      content: "";
+      position: absolute;
+      width: 60vw;
+      height: 60vw;
+      background: radial-gradient(circle, var(--glow) 0%, transparent 70%);
+      opacity: 0.15;
+      filter: blur(80px);
+      z-index: 0;
+    }
+
+    /* SLIDERS */
+    #colorSlider, #bgSlider {
       width: 300px;
       height: 10px;
+      border: 2px solid var(--glow);
+      border-radius: 10px;
+      box-shadow: 0 0 15px var(--glow);
+      cursor: pointer;
+      appearance: none;
+      z-index: 5;
+    }
+
+    #colorSlider {
       background: linear-gradient(
         to right,
         hsl(0,100%,50%),
@@ -54,39 +91,17 @@
         hsl(300,100%,50%),
         hsl(360,100%,50%)
       );
-      border: 2px solid var(--glow);
-      border-radius: 10px;
-      box-shadow: 0 0 15px var(--glow);
-      cursor: pointer;
-      appearance: none;
     }
 
-    #colorSlider::-webkit-slider-thumb {
-      appearance: none;
-      width: 20px;
-      height: 20px;
-      background: var(--glow);
-      border-radius: 50%;
-      box-shadow: 0 0 15px var(--glow);
-      cursor: pointer;
-    }
-
-    /* BOTTOM BACKGROUND BRIGHTNESS SLIDER (BLACK → WHITE) */
     #bgSlider {
-      width: 300px;
-      height: 10px;
       background: linear-gradient(
         to right,
         hsl(0,0%,0%),
         hsl(0,0%,100%)
       );
-      border: 2px solid var(--glow);
-      border-radius: 10px;
-      box-shadow: 0 0 15px var(--glow);
-      cursor: pointer;
-      appearance: none;
     }
 
+    #colorSlider::-webkit-slider-thumb,
     #bgSlider::-webkit-slider-thumb {
       appearance: none;
       width: 20px;
@@ -97,6 +112,7 @@
       cursor: pointer;
     }
 
+    /* WIDGET */
     .widget {
       position: relative;
       overflow: hidden;
@@ -106,15 +122,28 @@
       padding: 1.5vw 3vw;
       border: 0.3vw solid var(--glow);
       border-radius: 1vw;
-
-      /* Widget background ALSO follows slider */
       background: hsl(0, 0%, var(--bgLightness));
-
       box-shadow: 0 0 2vw var(--glow);
-      animation: pulse 2s infinite;
+      animation: pulse 2s infinite, borderFlow 4s linear infinite;
       cursor: pointer;
+      transform-style: preserve-3d;
+      z-index: 10;
     }
 
+    /* GLASS MODE */
+    .glass {
+      backdrop-filter: blur(10px);
+      background: rgba(255,255,255,0.1) !important;
+    }
+
+    /* BORDER FLOW ANIMATION */
+    @keyframes borderFlow {
+      0% { border-color: hsl(var(--hue), 100%, 50%); }
+      50% { border-color: hsl(calc(var(--hue) + 60), 100%, 50%); }
+      100% { border-color: hsl(var(--hue), 100%, 50%); }
+    }
+
+    /* GLITCH */
     .widget::after {
       content: "";
       position: absolute;
@@ -156,20 +185,24 @@
       100% { transform: translateX(0); opacity: 0.6; }
     }
 
-    @keyframes rainbowCycle {
-      0%   { --hue: 0; }
-      16%  { --hue: 60; }
-      32%  { --hue: 120; }
-      48%  { --hue: 180; }
-      64%  { --hue: 240; }
-      80%  { --hue: 300; }
-      100% { --hue: 360; }
+    @keyframes pulse {
+      0% { box-shadow: 0 0 1vw var(--glow); }
+      50% { box-shadow: 0 0 2.2vw var(--glow); }
+      100% { box-shadow: 0 0 1vw var(--glow); }
     }
 
-    .rainbow-mode {
-      animation: rainbowCycle 4s linear infinite;
+    /* POP ANIMATION */
+    @keyframes pop {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
     }
 
+    .pop {
+      animation: pop 0.4s ease-out;
+    }
+
+    /* ICON + TEXT */
     .icon {
       width: 6vw;
       height: 6vw;
@@ -194,13 +227,16 @@
       padding: 10px 20px;
       border-radius: 10px;
       box-shadow: 0 0 1.5vw var(--glow);
+      z-index: 5;
     }
 
-    @keyframes pulse {
-      0% { box-shadow: 0 0 1vw var(--glow); }
-      50% { box-shadow: 0 0 2.2vw var(--glow); }
-      100% { box-shadow: 0 0 1vw var(--glow); }
+    /* HIDE UI MODE */
+    .hide-ui input,
+    .hide-ui .timebox {
+      opacity: 0;
+      pointer-events: none;
     }
+
   </style>
 </head>
 
@@ -214,13 +250,11 @@
 
   <div class="timebox" id="timebox">Loading time...</div>
 
-  <!-- COLOR SLIDER -->
   <input type="range" id="colorSlider" min="0" max="360" value="120">
-
-  <!-- BACKGROUND BLACK ↔ WHITE SLIDER -->
   <input type="range" id="bgSlider" min="0" max="100" value="0">
 
   <script>
+
     async function loadCount() {
       const res = await fetch("https://decapi.me/twitch/followcount/vulsilverfox");
       const text = await res.text();
@@ -256,6 +290,7 @@
     const root = document.documentElement;
     const widget = document.getElementById("widget");
 
+    /* COLOR SLIDER */
     document.getElementById("colorSlider").addEventListener("input", (e) => {
       widget.classList.remove("rainbow-mode");
       const hue = e.target.value;
@@ -263,24 +298,52 @@
       root.style.setProperty("--glow", `hsl(${hue}, 100%, 50%)`);
     });
 
+    /* BACKGROUND SLIDER */
     document.getElementById("bgSlider").addEventListener("input", (e) => {
       const lightness = e.target.value;
-
-      /* ⭐ FIXED: apply % so HSL works */
       root.style.setProperty("--bgLightness", lightness + "%");
     });
 
+    /* RAINBOW MODE TOGGLE */
     let rainbowOn = false;
-
     document.getElementById("wolfIcon").addEventListener("click", () => {
       rainbowOn = !rainbowOn;
+      widget.classList.toggle("rainbow-mode", rainbowOn);
+    });
 
-      if (rainbowOn) {
-        widget.classList.add("rainbow-mode");
-      } else {
-        widget.classList.remove("rainbow-mode");
+    /* 3D PARALLAX */
+    widget.addEventListener("mousemove", (e) => {
+      const rect = widget.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / rect.width - 0.5;
+      const y = (e.clientY - rect.top) / rect.height - 0.5;
+      widget.style.transform = `rotateX(${y * 6}deg) rotateY(${x * 6}deg)`;
+    });
+
+    widget.addEventListener("mouseleave", () => {
+      widget.style.transform = "rotateX(0deg) rotateY(0deg)";
+    });
+
+    /* HIDE UI (H) */
+    document.addEventListener("keydown", (e) => {
+      if (e.key.toLowerCase() === "h") {
+        document.body.classList.toggle("hide-ui");
       }
     });
+
+    /* GLASS MODE (G) */
+    document.addEventListener("keydown", (e) => {
+      if (e.key.toLowerCase() === "g") {
+        widget.classList.toggle("glass");
+      }
+    });
+
+    /* THEME PRESETS (1,2,3) */
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "1") root.style.setProperty("--hue", 200);
+      if (e.key === "2") root.style.setProperty("--hue", 120);
+      if (e.key === "3") root.style.setProperty("--hue", 300);
+    });
+
   </script>
 
 </body>
