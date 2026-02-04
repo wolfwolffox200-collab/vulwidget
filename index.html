@@ -2,9 +2,19 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="color-scheme" content="dark light">
   <title>VulSilverFox Followers</title>
 
   <style>
+
+    /* 🔥 FORCE TRUE TRANSPARENCY (fixes Vercel/Chrome white background) */
+    html {
+      background-color: rgba(0,0,0,0) !important;
+    }
+    body {
+      background-color: rgba(0,0,0,0) !important;
+    }
+
     :root {
       --hue: 120;
       --glow: hsl(var(--hue), 100%, 50%);
@@ -14,7 +24,7 @@
     /* FULL PAGE TRANSPARENCY */
     html, body {
       margin: 0;
-      background: transparent;
+      background: transparent !important;
       font-family: 'Orbitron', sans-serif;
       display: flex;
       flex-direction: column;
